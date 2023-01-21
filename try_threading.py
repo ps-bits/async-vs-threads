@@ -3,9 +3,7 @@ import queue
 import time
 
 
-def run():
-
-    message = "ball"
+def run(message, work):
 
     ping_q = queue.Queue()
     pong_q = queue.Queue()
@@ -13,10 +11,14 @@ def run():
     ping_q.put("start")
 
     ping_thread = threading.Thread(
-        target=ping_pong_player, args=["Mr Ping", ping_q, pong_q, message], daemon=True
+        target=ping_pong_player,
+        args=["Mr Ping", ping_q, pong_q, message, work],
+        daemon=True,
     )
     pong_thread = threading.Thread(
-        target=ping_pong_player, args=["Mr Pong", pong_q, ping_q, message], daemon=True
+        target=ping_pong_player,
+        args=["Mr Pong", pong_q, ping_q, message, work],
+        daemon=True,
     )
 
     ping_thread.start()
@@ -31,7 +33,7 @@ def run():
     pong_thread.join()
 
 
-def ping_pong_player(name, own_q, other_q, message):
+def ping_pong_player(name, own_q, other_q, message, work):
     start = time.time()
     counter = 0
     max_duration = 1
@@ -48,6 +50,8 @@ def ping_pong_player(name, own_q, other_q, message):
             break
 
         counter += 1
+
+        message = work(message)
 
         other_q.put(message)
 

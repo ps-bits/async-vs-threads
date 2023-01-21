@@ -1,22 +1,20 @@
 import asyncio
 
 
-def run():
-    asyncio.run(main())
+def run(message, work):
+    asyncio.run(main(message, work))
 
 
-async def main():
-
-    message = "ball"
+async def main(message, work):
 
     ping_q = asyncio.Queue()
     pong_q = asyncio.Queue()
 
     ping_task = asyncio.create_task(
-        ping_pong_player("Mr Ping", ping_q, pong_q, message)
+        ping_pong_player("Mr Ping", ping_q, pong_q, message, work)
     )
     pong_task = asyncio.create_task(
-        ping_pong_player("Mr Pong", pong_q, ping_q, message)
+        ping_pong_player("Mr Pong", pong_q, ping_q, message, work)
     )
 
     ping_q.put_nowait("start")
@@ -35,7 +33,7 @@ async def main():
     # pong_task.cancel()
 
 
-async def ping_pong_player(name, own_q, other_q, message):
+async def ping_pong_player(name, own_q, other_q, message, work):
     counter = 0
     while True:
 
@@ -45,6 +43,8 @@ async def ping_pong_player(name, own_q, other_q, message):
             break
 
         counter += 1
+
+        message = work(message)
 
         other_q.put_nowait(message)
 
