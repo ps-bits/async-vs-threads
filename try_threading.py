@@ -11,13 +11,13 @@ def run(message, work):
     ping_q.put("start")
 
     ping_thread = threading.Thread(
-        target=ping_pong_player,
-        args=["Mr Ping", ping_q, pong_q, message, work],
+        target=worker,
+        args=["ping", ping_q, pong_q, message, work],
         daemon=True,
     )
     pong_thread = threading.Thread(
-        target=ping_pong_player,
-        args=["Mr Pong", pong_q, ping_q, message, work],
+        target=worker,
+        args=["pong", pong_q, ping_q, message, work],
         daemon=True,
     )
 
@@ -33,7 +33,7 @@ def run(message, work):
     pong_thread.join()
 
 
-def ping_pong_player(name, own_q, other_q, message, work):
+def worker(name, own_q, other_q, message, work):
     start = time.time()
     counter = 0
     max_duration = 1
